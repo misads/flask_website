@@ -1,2 +1,2 @@
 # flask_demo
-一个flask框架使用sqlalchemy的demo
+一个flask框架使用sqlalchemy的完整demo
