@@ -1,5 +1,5 @@
 # flask_demo
-一个flask框架使用sqlalchemy的完整demo
+A complete, operational flask demo using the sqlalchemy framework (to hanle thedatabase).
 
 ## Install
  1. Run `./prepare.sh` to install dependencies(using apt and pip).
