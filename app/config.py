@@ -70,7 +70,7 @@ class Config(object):
     PERMANENT_SESSION_LIFETIME is the lifetime of a session.
     session 过期时间
     '''
-    PERMANENT_SESSION_LIFETIME = 86400  # 24小时session过期   604800 = 7 days in seconds
+    PERMANENT_SESSION_LIFETIME = 604800  # 24小时session过期   604800 = 7 days in seconds
 
 
     '''

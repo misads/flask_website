@@ -67,7 +67,7 @@ def register():
         session['admin'] = user.admin
         session['nonce'] = utils.sha512(os.urandom(10))
 
-    return redirect('/')
+    return jsonify([])
 
 
 @auth.route('/login', methods=['GET'])
@@ -110,7 +110,7 @@ def login():
     else:
         return jsonify(['Username not existed.'])
 
-    return redirect('/')
+    return jsonify([])
 
 
 @auth.route('/logout')
