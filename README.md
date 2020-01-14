@@ -13,7 +13,7 @@ A Flask CMS demo based on SqlAlchemy framework.
 - [x] Database initiation
 - [x] Index template
 
-<img src="http://www.xyu.ink/wp-content/uploads/2020/01/flask.png" style="zoom:80%;" alt="highlights" />
+<img src="http://www.xyu.ink/wp-content/uploads/2020/01/flask2.png" style="zoom:80%;" alt="highlights" />
 
 ## Installation
 
