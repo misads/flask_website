@@ -8,6 +8,7 @@ SQLAlchemy==1.2.2
 SQLAlchemy-Utils==0.32.21
 passlib==1.7.1
 six==1.11.0
+bcrypt
 itsdangerous==0.24
 requests==2.18.4
 PyMySQL==0.8.0

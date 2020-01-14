@@ -1,5 +1,11 @@
 # flask_demo
-A operational Flask demo based on SqlAlchemy framework.
+<p>
+    <a href="https://opensource.org/licenses/MIT">
+        <img src="https://img.shields.io/badge/License-Apache-brightgreen.svg" alt="License">
+    </a>
+</p>
+
+A Flask demo based on SqlAlchemy framework.
 
 ## Install
  1. Run `./prepare.sh` to install dependencies (for ubuntu).

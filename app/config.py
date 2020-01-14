@@ -1,6 +1,26 @@
 # -*- coding:utf-8 -*-
 import os
 
+if not os.environ.get('SECRET_KEY'):
+    # Attempt to read the secret from the secret file
+    # This will fail if the secret has not been written
+    try:
+        with open('.ctfd_secret_key', 'rb') as secret:
+            key = secret.read()
+    except (OSError, IOError):
+        key = None
+
+    if not key:
+        key = os.urandom(64)
+        # Attempt to write the secret file
+        # This will fail if the filesystem is read-only
+        try:
+            with open('.ctfd_secret_key', 'wb') as secret:
+                secret.write(key)
+                secret.flush()
+        except (OSError, IOError):
+            pass
+
 
 class Config(object):
     '''
@@ -13,16 +33,16 @@ class Config(object):
 
     http://flask.pocoo.org/docs/0.11/quickstart/#sessions
     '''
-    SECRET_KEY = None
+    SECRET_KEY = os.environ.get('SECRET_KEY') or key
 
     '''
     SQLALCHEMY_DATABASE_URI is the URI that specifies the username, password, hostname, port, and database of the server
     used to hold the CTFd database.
 
     http://flask-sqlalchemy.pocoo.org/2.1/config/#configuration-keys
-    数据库URL
+    数据库URL mysql://用户名:密码@localhost:端口/数据库'
     '''
-    SQLALCHEMY_DATABASE_URI = 'mysql://root:123456@localhost:3306/detect'
+    SQLALCHEMY_DATABASE_URI = 'mysql://test:123456@localhost:3306/flask'
     '''
     SQLALCHEMY_TRACK_MODIFICATIONS is automatically disabled to suppress warnings and save memory. You should only enable
     this if you need it.
@@ -52,10 +72,6 @@ class Config(object):
     '''
     PERMANENT_SESSION_LIFETIME = 86400  # 24小时session过期   604800 = 7 days in seconds
 
-    '''
-    HOST specifies the hostname where the CTFd instance will exist. It is currently unused.
-    '''
-    HOST = ".ctfd.io"
 
     '''
     MAILFROM_ADDR is the email address that emails are sent from if not overridden in the configuration panel.
@@ -129,11 +145,11 @@ class Config(object):
     # 定时任务
     JOBS = [
         {
-            'id': 'schuler_job',
-            'func': 'CTFd.plugins.ChalsWithEnvs.utils:check_outdate_container',
-            'args': None,
-            'trigger': 'interval',
-            'seconds': 5
+            # 'id': 'schuler_job',
+            # 'func': 'CTFd.plugins.ChalsWithEnvs.utils:check_outdate_container',
+            # 'args': None,
+            # 'trigger': 'interval',
+            # 'seconds': 5
         }
     ]
 

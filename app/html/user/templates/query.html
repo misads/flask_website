@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="jumbotron">
+        <div class="container">
+            <h3 class="q-awards">'{{ q }}' 的搜索结果
+
+                <span class="create-team" role="button" data-toggle="tooltip" title="Create Award">
+				<a href="/admin/users">
+					<i class="btn-fa fas fa-plus-circle black"></i>
+				</a>
+			</span>
+            </h3>
+
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <table id="teamsboard" class=" table table-striped">
+                    {% if tags %}
+                        <thead>
+                        <tr>
+                            <td><b>Image</b></td>
+
+
+                            <td>　　<b>Tag</b></td>
+                        </tr>
+
+
+                        </thead>
+                    {% endif %}
+                    <tbody>
+                    {% for tag in tags %}
+                        <tr>
+
+                            <!--<td><a href="/misads/{{ dir }}/{{ file }}">{{ file }}</a>
+
+						</td>-->
+                            <td><a href="/static/{{ tag }}">
+                                <img src="/static/{{ tag }}" width="60" height="60">
+                            </a>
+                            </td>
+
+                            <td>　　<b>{{ tags[tag] }}</b>
+                            </td>
+
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        var nonce = "{{ nonce }}";
+
+        $(document).ready(function () {
+            $('.delete-award').click(function () {
+                var tr = this.parentNode.parentNode;
+                var awardid = $(this).attr('award-id').trim();
+                var reason = $(this).attr('award-reason').trim();
+
+                ezq({
+                    title: "Delete Confirmation",
+                    body: 'Are you sure you want to <span class="text-danger">Delete</span> the <b>' + reason + '</b> award?',
+                    success: function () {
+                        var action = '/admin/awards/' + awardid + '/delete';
+                        $.post(script_root + action, {
+                            'nonce': nonce
+                        }, function (data) {
+                            //document.location.href = "/team";
+                            if (data == '1') {
+                                tr.parentNode.removeChild(tr);
+                            } else {
+                                var content = data;
+                                ezal({
+                                    title: "错误",
+                                    body: '发生了一个错误，请刷新页面后重试。',
+                                    button: "确定"
+                                });
+                            }
+
+                        });
+
+
+                    }
+
+                });
+
+
+            });
+        });
+    </script>
+{% endblock %}
