@@ -104,3 +104,8 @@ body {
     margin-left: 20%;
 }
 
+
+/*align*/
+.float-right{
+    float: right;
+}

@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+#user
+.ctfd_secret_key
+.idea/
