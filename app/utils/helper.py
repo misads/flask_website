@@ -1,4 +1,4 @@
-from app.models import db, Strangers, Users
+from app.models import db, Users
 from flask import session
 
 

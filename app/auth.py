@@ -27,9 +27,12 @@ def register():
     username = username.strip()
     email = email.strip()
 
+    forbidden_list = ['admin', 'root', 'system', 'username', 'name', 'team', 'user']
+
     name_too_short = 0 < len(username) < 3
     name_empty = len(username) == 0
     name_too_long = len(username) > 16
+    invalid_name = username in forbidden_list
     invalid_email = not utils.check_email_format(email)
     invalid_username = utils.check_email_format(username)
     username_existed = Users.query.add_columns('name', 'id').filter_by(name=username).first()
@@ -42,6 +45,7 @@ def register():
         'Username can not be shorter than 3 characters.': name_too_short,
         'Username can not be empty.': name_empty,
         'Username can not be longer than 16 characters.': name_too_long,
+        'Illegal username.': invalid_name,
         'Username can not be an email format.': invalid_username,
         'Invalid email.': invalid_email,
         'Username has been taken.': username_existed,
@@ -72,6 +76,8 @@ def register():
 
 @auth.route('/login', methods=['GET'])
 def login_page():
+    if utils.authed():
+        return render_template('index.html')
     return render_template('index.html', login=True)
 
 

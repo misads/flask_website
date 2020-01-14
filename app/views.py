@@ -2,26 +2,13 @@ import datetime
 import os
 import time
 
-from flask import current_app as app, Blueprint, jsonify, render_template, abort, send_file, session
+from flask import current_app as app, Blueprint, jsonify, render_template, abort, send_file, session, request
 from flask.helpers import safe_join
+from app import utils
 
-
-from app.models import db, Strangers
+from app.models import db, Data
 
 views = Blueprint('views', __name__)
-
-
-def getTimeStr(fmt="%Y/%m/%d %H:%M:%S", yearlength=4):
-    timeStamp = int(time.time())
-    dateArray = datetime.datetime.utcfromtimestamp(timeStamp)
-
-    # timezone = 8
-    # timezonetime = dateArray + datetime.timedelta(hours=timezone)
-    otherStyleTime = dateArray.strftime(fmt)
-
-    if yearlength == 2:
-        otherStyleTime = otherStyleTime[2:]
-    return otherStyleTime
 
 
 @views.route('/')
@@ -38,26 +25,36 @@ def index():
 
 @views.route('/query')
 def query():
-    return render_template('query.html')
+    d_q = Data.query.all()
+    return render_template('query.html', url='/query', data=d_q)
 
 
-# @views.route('/login', methods=['GET', 'POST'])
-# def login():
-#     return render_template('login.html')
+@views.route('/new')
+def new_detect():
+    requests = request.args
+    if 'name' not in requests or 'value' not in requests:
+        return jsonify([])
+
+    name = requests['name']
+    value = requests['value']
+    timestr = utils.get_time_str(utils.get_time_stamp())
+    name_q = Data.query.filter_by(name=name).first()
+    status = 'Add'
+    if name_q:
+        status = 'Update'
+        name_q.value = value
+        name_q.time = timestr
+        db.session.commit()
+    else:
+        new_data = Data(name, value, timestr)
+        db.session.add(new_data)
+        db.session.commit()
+    return jsonify([status, name, value, timestr])
 
 
-@views.route('/detect')
-def detect():
-    timestr = getTimeStr()
-    newstranger = Strangers(timestr)
-    db.session.add(newstranger)
-    db.session.commit()
-    return timestr
-
-
-@views.route('/deleteall')
-def deleteall():
-    Strangers.query.delete()
+@views.route('/delete_all', methods=['GET'])
+def delete_all():
+    Data.query.delete()
     db.session.commit()
     return 'succeed'
 

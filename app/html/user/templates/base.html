@@ -17,7 +17,8 @@
 
     <script type="text/javascript">
         var script_root = "{{ request.script_root }}";
-        var csrf_nonce = "{{ nonce }}"
+        var csrf_nonce = "{{ nonce }}";
+        var model_box = "";
     </script>
     <script src="{{ request.script_root }}/html/user/static/js/jquery.min.js"></script>
     <script src="{{ request.script_root }}/html/user/static/js/bootstrap.min.js"></script>
@@ -234,17 +235,29 @@
 $(function () {
     {%if login %}
         $('#loginModal').modal('show');
+        model_box = "login";
     {% endif %}
 
     $("#login").click(function () {
+        model_box = "login";
         $('#loginModal').modal('show') //显示模态框
     });
 
     $("#register").click(function () {
+        model_box = "register";
         $('#registerModal').modal('show') //显示模态框
     });
 
-
+    $(document).keydown(function (event){
+        if (event.keyCode == 13) {
+          {#$('#Submit').triggerHandler('click');#}
+            if(model_box=="login"){
+                login();
+            }else if(model_box=="register"){
+                register();
+            }
+        }
+    });
 });
 
 function showerror(msg) {
@@ -290,13 +303,13 @@ function register(){
         'nonce': $(" input[ name='nonce' ] ").val(),
     }, function (data) {
         //document.location.href = "/team";
-       if (data.length==0) {
-           document.location.href = "/"
-       }
-       else {
+        if (data.length==0) {
+            document.location.href = "/"
+        }
+        else {
            showerror(data[0]);
            return;
-       }
+        }
 
     });
 
@@ -325,13 +338,17 @@ function login(){
         'nonce': $(" input[ name='nonce' ] ").val(),
     }, function (data) {
         //document.location.href = "/team";
-       if (data.length==0) {
-           document.location.href = "/"
-       }
-       else {
+        if (data.length==0) {
+            {% if url %}
+                document.location.href = "{{ url }}"
+            {% else %}
+                document.location.href = "/"
+            {% endif %}
+        }
+        else {
            showerror(data[0]);
            return;
-       }
+        }
 
     });
 

@@ -11,11 +11,15 @@ app.config.from_object('app.config.Config')
 db = SQLAlchemy()  # type: SQLAlchemy
 
 
-class Strangers(db.Model):
+class Data(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.String(80))
+    name = db.Column(db.String(32))
+    value = db.Column(db.String(32))
+    time = db.Column(db.String(32))
 
-    def __init__(self, time):
+    def __init__(self, name, value, time):
+        self.name = name
+        self.value = value
         self.time = time
 
     def __repr__(self):

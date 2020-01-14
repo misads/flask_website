@@ -40,7 +40,7 @@ def create_app(config='app.config.Config'):
         theme_loader = ThemeLoader(os.path.join(app.root_path, 'html'), followlinks=True)
         app.jinja_loader = theme_loader
 
-        from app.models import db, Strangers
+        from app.models import db
 
         url = make_url(app.config['SQLALCHEMY_DATABASE_URI'])
         if url.drivername == 'postgres':
