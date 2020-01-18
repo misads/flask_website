@@ -2,7 +2,7 @@ import os
 import hashlib
 from flask import current_app as app, request, redirect, url_for, session, render_template, abort, jsonify
 from .misc_utils import *
-from helper import *
+from .helper import *
 
 
 def sha512(string):
