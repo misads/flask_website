@@ -27,6 +27,9 @@ body {
 /*    !*background-color: #eee;*!*/
 /*    z-index: 9999;*/
 /*}*/
+.dark{
+    color: #333;
+}
 
 /*dropdown*/
 
@@ -147,6 +150,7 @@ body {
     background-color: rgba(0, 0, 0, .85);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     backdrop-filter: saturate(180%) blur(20px);
+    /*font-size: 16px;*/
 }
 
 .site-header a {
@@ -253,4 +257,10 @@ body {
 
 .d-flex {
     display: flex !important;
+}
+
+@media (max-width: 768px) {
+    .d-none {
+        display: none !important
+    }
 }

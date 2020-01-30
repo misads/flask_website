@@ -1,0 +1,160 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<div class="container">
+<h2><a name="header-n11" class="md-header-anchor md-print-anchor" href="af://n11"> </a><span>html排版帮助</span></h2><hr />
+<h4><a name="header-n12" class="md-header-anchor md-print-anchor" href="af://n12"> </a><span>大标题</span></h4>
+<div class="jumbotron text-center light-back">
+    <h2>Ynlab.top</h2>
+    <p>专注于计算机视觉和智能信息处理</p>
+</div>
+<pre><code class='language-html' lang='html'>&lt;div class=&quot;jumbotron text-center light-back&quot;&gt;
+    &lt;h2&gt;Ynlab.top&lt;/h2&gt;
+    &lt;p&gt;专注于计算机视觉和智能信息处理&lt;/p&gt;
+&lt;/div&gt;
+</code></pre>
+<p>&nbsp;</p>
+<h4><a name="header-n14" class="md-header-anchor md-print-anchor" href="af://n14"> </a><span>文字图标</span></h4>
+<pre><code class='language-html' lang='html'>&lt;span data-toggle=&quot;tooltip&quot; data-placement=&quot;top&quot; title=&quot;标签&quot;&gt;
+  &lt;a href=&quot;javascript:;&quot; class=&quot;dark&quot;&gt;
+    &lt;i class=&quot;glyphicon glyphicon-tags cursor-pointer&quot;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/span&gt;
+</code></pre>
+
+<span data-toggle="tooltip" data-placement="top" title="标签">
+	<a href="javascript:;" class="dark">
+		<i class="glyphicon glyphicon-tags cursor-pointer"></i>
+  </a>
+</span>
+
+<p>&nbsp;</p>
+<h4><a name="header-n56" class="md-header-anchor md-print-anchor" href="af://n56"> </a><span>字体大小</span></h4>
+<pre><code class='language-html' lang='html'>&lt;span class=&quot;f-10&quot;&gt;10号字&lt;/span&gt;&lt;br/&gt;
+&lt;span class=&quot;f-12&quot;&gt;12号字&lt;/span&gt;&lt;br/&gt;
+&lt;span class=&quot;f-15&quot;&gt;15号字&lt;/span&gt;&lt;br/&gt;
+&lt;span class=&quot;f-20&quot;&gt;20号字&lt;/span&gt;&lt;br/&gt;
+</code></pre>
+
+<span class="f-10">10号字</span><br/>
+<span class="f-12">12号字</span><br/>
+<span class="f-15">15号字</span><br/>
+<span class="f-20">20号字</span><br/>
+
+<p>&nbsp;</p>
+<h4><a name="header-n68" class="md-header-anchor md-print-anchor" href="af://n68"> </a><span>表格</span></h4>
+<pre><code class='language-html' lang='html'>&lt;div class=&quot;row&quot;&gt;
+   &lt;div class=&quot;col-md-12&quot;&gt;
+      &lt;table id=&quot;pages&quot; class=&quot;table table-striped f-10&quot;&gt;
+         &lt;thead&gt;
+           &lt;tr&gt;
+              &lt;td&gt;&lt;b&gt;Title&lt;/b&gt;&lt;/td&gt;
+              &lt;td&gt;&lt;b&gt;Route&lt;/b&gt;&lt;/td&gt;
+              &lt;td&gt;&lt;b&gt;Authentication&lt;/b&gt;&lt;/td&gt;
+              &lt;td class=&quot;text-center&quot;&gt;&lt;b&gt;Published&lt;/b&gt;&lt;/td&gt;
+              &lt;td class=&quot;text-center&quot; width=&quot;10px&quot;&gt;&lt;b&gt;Settings&lt;/b&gt;&lt;/td&gt;
+           &lt;/tr&gt;
+         &lt;/thead&gt;
+         &lt;tbody&gt;
+            &lt;tr&gt;
+               &lt;td&gt;index&lt;/td&gt;
+               &lt;td&gt;index&lt;/td&gt;
+               &lt;td&gt;&lt;/td&gt;
+               &lt;td class=&quot;text-center&quot;&gt;Published&lt;/td&gt;
+               &lt;td class=&quot;text-center&quot;&gt;x&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+               &lt;td&gt;profile&lt;/td&gt;
+               &lt;td&gt;profile&lt;/td&gt;
+               &lt;td&gt;Required&lt;/td&gt;
+               &lt;td class=&quot;text-center&quot;&gt;Draft&lt;/td&gt;
+               &lt;td class=&quot;text-center&quot;&gt;x&lt;/td&gt;
+            &lt;/tr&gt;
+         &lt;/tbody&gt;
+      &lt;/table&gt;
+   &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<div class="row">
+   <div class="col-md-12">
+      <table id="pages" class="table table-striped f-10">
+         <thead>
+           <tr>
+              <td><b>Title</b></td>
+              <td><b>Route</b></td>
+              <td><b>Authentication</b></td>
+              <td class="text-center"><b>Published</b></td>
+              <td class="text-center" width="10px"><b>Settings</b></td>
+           </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>index</td>
+               <td>index</td>
+               <td></td>
+               <td class="text-center">Published</td>
+               <td class="text-center">x</td>
+            </tr>
+            <tr>
+               <td>profile</td>
+               <td>profile</td>
+               <td>Required</td>
+               <td class="text-center">Draft</td>
+               <td class="text-center">x</td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
+</div>
+
+<p>&nbsp;</p>
+<h4><a name="header-n83" class="md-header-anchor md-print-anchor" href="af://n83"> </a><span>展板</span></h4>
+<pre><code class='language-html' lang='html'>&lt;div class=&quot;d-md-flex flex-md-equal w-100 my-md-3 pl-md-3&quot;&gt;
+          &lt;div class=&quot;bg-dark mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden&quot;&gt;
+            &lt;div class=&quot;my-3 py-3&quot;&gt;
+              &lt;h2 class=&quot;display-5&quot;&gt;Polygon System&lt;/h2&gt;
+              &lt;p class=&quot;lead&quot;&gt;提供非管理员用户出题，协助出题&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;bg-light box-shadow mx-auto&quot; style=&quot;width: 80%; height: 300px; border-radius: 21px 21px 0 0;&quot;&gt;
+              &lt;img src=&quot;images/polygon.png&quot; class=&quot;img-fluid&quot; alt=&quot;Function&quot;&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden&quot;&gt;
+            &lt;div class=&quot;my-3 p-3&quot;&gt;
+              &lt;h2 class=&quot;display-5&quot;&gt;支持各种类型榜单&lt;/h2&gt;
+          &lt;p class=&quot;lead&quot;&gt;完美支持ICPC、OI、IOI赛制榜单&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;bg-dark box-shadow mx-auto&quot; style=&quot;width: 80%; height: 300px; border-radius: 21px 21px 0 0;&quot;&gt;
+          &lt;img src=&quot;images/icpc.png&quot; class=&quot;img-fluid&quot; alt=&quot;Function&quot;&gt;
+        &lt;/div&gt;
+          &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
+          <div class="bg-dark mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+            <div class="my-3 py-3">
+              <h2 class="display-5">Polygon System</h2>
+              <p class="lead">提供非管理员用户出题，协助出题</p>
+            </div>
+            <div class="bg-light box-shadow mx-auto" style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;">
+              <img src="images/polygon.png" class="img-fluid" alt="Function">
+            </div>
+          </div>
+          <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div class="my-3 p-3">
+              <h2 class="display-5">支持各种类型榜单</h2>
+          <p class="lead">完美支持ICPC、OI、IOI赛制榜单</p>
+            </div>
+            <div class="bg-dark box-shadow mx-auto" style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;">
+          <img src="images/icpc.png" class="img-fluid" alt="Function">
+        </div>
+          </div>
+</div>
+
+
+</div>
+
+{% endblock %}

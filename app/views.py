@@ -2,11 +2,11 @@ import datetime
 import os
 import time
 
-from flask import current_app as app, Blueprint, jsonify, render_template, abort, send_file, session, request
+from flask import current_app as app, Blueprint, jsonify, render_template, abort, send_file, session, request, redirect
 from flask.helpers import safe_join
 from app import utils
 
-from app.models import db, Data
+from app.models import db, Data, Files, Pages
 
 views = Blueprint('views', __name__)
 
@@ -21,6 +21,18 @@ def index():
     # for row in s_q:
     #     response['strangers'].append(row.time)
     # return jsonify(response)
+
+
+@views.route("/<path:template>")
+def static_html(template):
+    page = Pages.query.filter_by(route=template).first()
+    if page is None:
+        abort(404)
+    else:
+        if page.auth_required and utils.authed() is False:
+            return redirect('/login')
+
+        return render_template('page.html', content=page.html)
 
 
 @views.route('/query')
@@ -57,6 +69,15 @@ def delete_all():
     Data.query.delete()
     db.session.commit()
     return 'succeed'
+
+
+@views.route('/files', defaults={'path': ''})
+@views.route('/files/<path:path>')
+def file_handler(path):
+    f = Files.query.filter_by(location=path).first_or_404()
+
+    upload_folder = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    return send_file(safe_join(upload_folder, f.location))
 
 
 @views.route('/html/user/static/<path:path>')

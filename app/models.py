@@ -49,3 +49,33 @@ class Users(db.Model):
     def __repr__(self):
         return '<user %r>' % self.name
 
+
+class Pages(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    auth_required = db.Column(db.Boolean)
+    title = db.Column(db.String(128))
+    route = db.Column(db.String(128), unique=True)
+    html = db.Column(db.Text)
+    draft = db.Column(db.Boolean)
+
+    def __init__(self, title, route, html, draft=True, auth_required=False):
+        self.title = title
+        self.route = route
+        self.html = html
+        self.draft = draft
+        self.auth_required = auth_required
+
+    def __repr__(self):
+        return "<Pages route {0}>".format(self.route)
+
+
+class Files(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # chal = db.Column(db.Integer, db.ForeignKey('challenges.id'))
+    location = db.Column(db.Text)
+
+    def __init__(self, location):
+        self.location = location
+
+    def __repr__(self):
+        return "<File {0} for challenge {1}>".format(self.location, self.chal)

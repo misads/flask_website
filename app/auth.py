@@ -27,7 +27,7 @@ def register():
     username = username.strip()
     email = email.strip()
 
-    forbidden_list = ['admin', 'root', 'system', 'username', 'name', 'team', 'user']
+    forbidden_list = ['root', 'system', 'username', 'name', 'team', 'user']
 
     name_too_short = 0 < len(username) < 3
     name_empty = len(username) == 0

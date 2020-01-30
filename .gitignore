@@ -111,3 +111,4 @@ venv.bak/
 */.DS_Store
 */*/.DS_Store
 app/utils/aliapi.py
+app/uploads/
