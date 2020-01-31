@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% for jsfile_name in script_list %}
+        <script src="{{ host }}/{{ jsfile_name }}.js"></script>
+    {% endfor %}
+
+    <div class="container">
+    {{ myechart|safe }}
+    </div>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+{% endblock %}
