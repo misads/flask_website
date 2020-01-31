@@ -1,9 +1,12 @@
 import datetime
 import os
 import time
+import json
 
 from flask import current_app as app, Blueprint, jsonify, render_template, abort, send_file, session, request, redirect
 from flask.helpers import safe_join
+from pyecharts_javascripthon.api import TRANSLATOR
+
 from app import utils
 
 from app.models import db, Data, Files, Pages
@@ -35,10 +38,25 @@ def static_html(template):
         return render_template('page.html', content=page.html)
 
 
-@views.route('/query')
-def query():
-    d_q = Data.query.all()
-    return render_template('query.html', url='/query', data=d_q)
+REMOTE_HOST = "/html/user/static/js/echarts"
+
+
+@views.route('/graph')
+def graph():
+    from app.interface import get_graph
+    kline = get_graph()
+    return render_template('graph.html', url='/graph', myechart=kline.render_embed(),
+                           host=REMOTE_HOST,
+                           script_list=kline.get_js_dependencies(), chart_id=kline.chart_id)
+
+
+@views.route('/g')
+def g():
+    from app.interface import get_graph
+    kline = get_graph()
+    snippet = TRANSLATOR.translate(kline.options).as_snippet()
+    d = json.loads(snippet)
+    return jsonify(d)
 
 
 @views.route('/new')

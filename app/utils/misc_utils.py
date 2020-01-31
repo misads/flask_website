@@ -1,3 +1,5 @@
+import os
+import yaml
 import datetime
 import time
 import re
@@ -5,6 +7,22 @@ import re
 
 def check_email_format(email):
     return bool(re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email))
+
+
+def load_yml(file='configs/config.yml', op=None):
+    if not os.path.isfile(file):
+        raise FileNotFoundError('File "%s" not found' % file)
+
+    with open(file, 'r') as f:
+        try:
+            cfg = yaml.safe_load(f.read())
+        except yaml.YAMLError:
+            raise Exception('Error parsing YAML file: ' + file)
+
+    if op:
+        return cfg[op]
+    else:
+        return cfg
 
 
 def color_print(text='', color=0):

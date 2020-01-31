@@ -8,6 +8,8 @@
 
     <div class="container">
     {{ myechart|safe }}
+    <br/>
+    <button id="update" class="btn btn-primary">Update</button>
     </div>
 
 {% endblock %}
@@ -15,5 +17,20 @@
 
 
 {% block scripts %}
+<script type="text/javascript">
+$(function () {
+
+    $("#update").click(function () {
+        $.get('/g', function (data) {
+            var option=data;
+
+            myChart_{{ chart_id }}.setOption(option);
+
+        });
+    });
+
+});
+</script>
+
 
 {% endblock %}
