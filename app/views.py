@@ -26,7 +26,7 @@ def index():
     # return jsonify(response)
 
 
-@views.route("/<path:template>")
+@views.route("/<path:template>", methods=['GET'])
 def static_html(template):
     page = Pages.query.filter_by(route=template).first()
     if page is None:

@@ -24,6 +24,7 @@
     </script>
     <script src="{{ request.script_root }}/html/user/static/js/jquery.min.js"></script>
     <script src="{{ request.script_root }}/html/user/static/js/bootstrap.min.js"></script>
+    <script src="{{ request.script_root }}/html/user/static/js/ezq.js"></script>
 
 </head>
 <body>
@@ -51,7 +52,7 @@
 	</div>
 	<div>
 		<ul class="nav navbar-nav">
-			<li class="active"><a href="/admin">管理面板<br/>ADMIN</a></li>
+			<li class="active"><a href="/admin">管理面板<br/>ADMIN PANEL</a></li>
 {#			<li><a href="/query">页面</a></li>#}
             <li class="dropdown">
                     <a href="#" class="dropbtn nav-link">页面 <b class="caret"></b><span class="ico_down"></span><br/>PAGES</a>
@@ -61,10 +62,8 @@
                         <a href="/admin/new_page">新增页面<span> <i class="glyphicon glyphicon-plus-sign" style="font-size:12px;"></i></span></a>
                         <a href="/admin/pages/help">帮助<span> <i class="glyphicon glyphicon-question-sign" style="font-size:12px;"></i></span></a>
                     </div>
-
-
             </li>
-
+            <li class="active"><a href="/admin/share/view/">共享文件<br/>FILE SHARING</a></li>
 		</ul>
 
         <p class="navbar-text navbar-right">　　　</p>

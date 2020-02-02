@@ -12,6 +12,8 @@ def admins_only(f):
     def admins_only_wrapper(*args, **kwargs):
         if session.get('admin'):
             return f(*args, **kwargs)
+        elif session.get('id'):
+            abort(403)
         else:
             return redirect(url_for('auth.login', next=request.path))
 

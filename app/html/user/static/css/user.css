@@ -88,6 +88,12 @@ body {
     border-color: #5B7290 !important;
 }
 
+.btn-light {
+    color: #212529;
+    background-color: #dae0e5;
+    border-color: #d3d9df
+}
+
 .badge-dark {
     background-color: #5B7290 !important;
 }

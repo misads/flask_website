@@ -6,7 +6,7 @@ import random
 
 def get_graph():
     relation = utils.load_yml('app/relation_north.yml')
-    nodes = [{"name": relation[i]['label'], "symbolSize": 10, "draggable": "False", "value": round(20 + random.random() * 20, 3),
+    nodes = [{"name": relation[i]['label'], "symbolSize": 15, "draggable": "True", "value": round(20 + random.random() * 20, 3),
               "category": 3 if random.random() < 0.01 else relation[i]['category']} for i in relation]
 
     # nodes = [{"name": "结点1", "symbolSize": 10, "draggable": "False", "value": 10, "category": "energy"},
@@ -62,7 +62,6 @@ def get_graph():
     graph = Graph("智能建筑 | 实时监控", width=1000, height=800)
     # def xxx(g: Chart):
     #     g.get_options()
-
 
     graph.add("", nodes, links, categories,
               graph_layout="force",

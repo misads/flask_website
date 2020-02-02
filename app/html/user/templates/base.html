@@ -67,14 +67,14 @@
 
                     <div class="dropdown-content topmost">
                         <a href="#">U-RISC</a>
-                        <a href="#">EBuild</a>
+                        <a href="/graph">EBuild</a>
 
                     </div>
 
 
             </li>
-            <li><a href="/query">团队<br/>TEAM</a></li>
-            <li><a href="/query">联系我们<br/>CONTACT US</a></li>
+            <li><a href="#">团队<br/>TEAM</a></li>
+            <li><a href="#">联系我们<br/>CONTACT US</a></li>
 		</ul>
 
         <p class="navbar-text navbar-right">　　　</p>
@@ -354,9 +354,9 @@ function login(){
         //document.location.href = "/team";
         if (data.length==0) {
             {% if url %}
-                document.location.href = "{{ url }}"
+                document.location.href = "{{ url }}";
             {% else %}
-                document.location.href = "/"
+                document.location.href = "/";
             {% endif %}
         }
         else {

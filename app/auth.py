@@ -78,7 +78,9 @@ def register():
 def login_page():
     if utils.authed():
         return render_template('index.html')
-    return render_template('index.html', login=True)
+    next = request.args.get('next')
+
+    return render_template('index.html', login=True, url=next)
 
 
 @auth.route('/login', methods=['POST'])

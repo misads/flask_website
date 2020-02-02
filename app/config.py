@@ -103,6 +103,7 @@ class Config(object):
     you can use the CTFd S3 plugin: https://github.com/ColdHeat/CTFd-S3-plugin
     '''
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+    SHARE_FOLDER = os.environ.get('SHARE_FOLDER') or os.path.join(os.path.dirname(os.path.abspath(__file__)),  'share')
     WRITE_UP_FOLDER = os.environ.get('WRITE_UP_FOLDER') or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'writeups')
     ENVS_FOLDER = os.environ.get('ENVS_FOLDER') or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'envs')
     PUSH_FLAG_FOLDER = os.environ.get('PUSH_FLAG_FOLDER') or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pushflags')

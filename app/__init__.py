@@ -7,7 +7,11 @@ from sqlalchemy_utils import database_exists, create_database
 from app.utils import init_utils
 from app.views import views
 from app.auth import auth
+
 from app.admin import admin
+from app.admin import pages
+from app.admin import share
+
 from jinja2 import FileSystemLoader
 
 
@@ -75,6 +79,9 @@ def create_app(config='app.config.Config'):
         app.register_blueprint(views)
         app.register_blueprint(auth)
         app.register_blueprint(admin)
+        app.register_blueprint(pages)
+        app.register_blueprint(share)
+
         return app
 
 

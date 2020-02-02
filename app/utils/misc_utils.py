@@ -5,6 +5,22 @@ import time
 import re
 
 
+def format_size(size):
+    if size < 1024:
+        return '%d B' % size
+    size = size / 1024.
+    if size < 1024:
+        return '%.1f K' % size
+    size = size / 1024.
+    if size < 1024:
+        return '%.1f M' % size
+    size = size / 1024.
+    if size < 1024:
+        return '%.1f G' % size
+    size = size / 1024.
+    return '%.1f T' % size
+
+
 def check_email_format(email):
     return bool(re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email))
 

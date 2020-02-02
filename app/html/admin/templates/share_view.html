@@ -1,0 +1,382 @@
+{% extends 'admin/base.html' %}
+
+
+{% block content %}
+
+<div class="modal fade" id="inputModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size:20px;">新建文件夹</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="display: inline"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+
+                <h4 class="modal-title" id="input_title">文件夹名</h4>
+                <br/>
+{#                col-sm-offset-2 col-sm-8" style="margin-top: 40px;"#}
+                <div class="site-login" style="margin-left:20%; width: 60%;">
+{#                    <form id="login-form" class="form-signin" style="margin-left:20%; width: 60%;" action="/login" method="post">#}
+                        <div class="showerror">
+
+                        </div>
+                        <input type="hidden" name="nonce"
+                               value="{{ nonce }}">
+                        <input type="hidden" id="group_fid" name="group_fid"
+                               value="">
+                        <div class="form-group field-loginform-username required">
+                            <div class="input-group"><span class="input-group-addon"><i
+                                    class="glyphicon glyphicon-folder-open"></i></span><input
+                                    type="text" id="folder_name" class="form-control" name="folder_name"
+                                    placeholder="new_directory" aria-required="true"></div>
+                            <p class="help-block help-block-error"></p>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-primary" name="group-button" onclick="create_folder();">新建</a></div>
+
+{#                    </form>#}
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="renameModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size:20px;">重命名</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="display: inline"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+
+                <h4 class="modal-title" id="input_title">新文件名</h4>
+                <br/>
+{#                col-sm-offset-2 col-sm-8" style="margin-top: 40px;"#}
+                <div class="site-login" style="margin-left:20%; width: 60%;">
+{#                    <form id="login-form" class="form-signin" style="margin-left:20%; width: 60%;" action="/login" method="post">#}
+                        <div class="showerror">
+
+                        </div>
+                        <input type="hidden" name="nonce"
+                               value="{{ nonce }}">
+                        <input type="hidden" id="rename_path" name="rename_path"
+                               value="">
+                        <div class="form-group field-loginform-username required">
+                            <div class="input-group"><span class="input-group-addon"><i
+                                    class="glyphicon glyphicon-file"></i></span><input
+                                    type="text" id="file_name" class="form-control" name="file_name"
+                                    placeholder="new_file" aria-required="true"></div>
+                            <p class="help-block help-block-error"></p>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-primary" name="group-button" onclick="rename();">重命名</a></div>
+
+{#                    </form>#}
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="uploadModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size:20px;">共享库</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="display: inline"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+
+                <h4 class="modal-title" id="input_title">上传文件</h4>
+                <br/>
+{#                col-sm-offset-2 col-sm-8" style="margin-top: 40px;"#}
+                <div class="site-login" style="margin-left:20%; width: 60%;">
+                    <form id="share_upload">
+                        <div class="showerror">
+
+                        </div>
+                        <div class="form-group required">
+                            <input type="file" name="files[]" id="media-files" class="" multiple="">
+                            <sub class="help-block">
+							一个可以上传多个文件，单个文件不要超过10M。
+						</sub>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-primary" name="group-button" onclick="upload();">上传</a></div>
+                        <input type="hidden" value="{{ nonce }}" name="nonce" id="nonce">
+                        <input type="hidden" value="{{ url }}" name="path" id="nonce">
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="container" style="width: 80%">
+    <span class="label label-default">当前路径</span>
+    {% for nav in navs %}
+        <a class="label label-primary" href="/admin/share/view/{{ nav[1] }}" >{{ nav[0] }}</a>
+    {% endfor %}
+
+    <a class="label label-success float-right" href="javascript:;" style="margin-right: 100px;" onclick="$('#inputModal').modal('show');">新建文件夹</a>
+    <a class="label label-warning float-right" href="javascript:;" style="margin-right: 4px;" onclick="$('#uploadModal').modal('show');">上传文件</a>
+
+    <table class="table" id="table1">
+        {#  <caption> / {{ logs_dir }} 的文件浏览</caption> #}
+
+        <thead>
+            <tr>
+                <th onclick="$.sortTable.sort('table1',0)">
+                    <a class="cursor-pointer">名称</a>
+                </th>
+                <th onclick="$.sortTable.sort('table1',1)">
+                    <a class="cursor-pointer">最后修改时间</a>
+                </th>
+                <th onclick="$.sortTable.sort('table1',2)">
+                    <a class="cursor-pointer">文件大小</a>
+                </th>
+                <th width="150px;">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ele in ele_list %}
+                {% if ele.is_dir %}
+                    <tr class="warning">
+                {% else %}
+                    <tr class="success">
+                {% endif %}
+                    
+                        <td><a href="/admin/share/view{{ url }}{{ ele.fullname }}" >{{ ele.fullname }}</a></td>
+                        <td>{{ ele.last_modify_time }}</td>
+                        <td>{{ ele.filesize }}</td>
+
+                        {% if ele.is_dir %}
+                            <td>
+                            <span data-toggle="tooltip" data-placement="top" title="重命名 {{ ele.fullname }}">
+                              <a href="javascript:;" class="dark" onclick="show_rename('{{ ele.fullname }}', '{{ url }}{{ ele.fullname }}');">
+                                <i class="glyphicon glyphicon-pencil cursor-pointer"></i></a>
+                            </span>
+                            <span class="delete-file" name="{{ ele.fullname }} 文件夹" path="{{ ele.fullname }}" data-toggle="tooltip" data-placement="top" title="删除 {{ ele.fullname }} 文件夹">
+                              <a href="#" class="dark">
+                                <i id="delete-file" class="glyphicon glyphicon-floppy-remove cursor-pointer"></i>
+                              </a>
+                            </span></td>
+                        {% else %}
+                            <td>
+                                <span class="rename-file" data-toggle="tooltip" data-placement="top" title="重命名 {{ ele.fullname }}">
+                                <a href="javascript:;" class="dark" onclick="show_rename('{{ ele.fullname }}', '{{ url }}{{ ele.fullname }}');">
+                                    <i class="glyphicon glyphicon-pencil cursor-pointer"></i></a>
+                                </span>
+                                <span data-toggle="tooltip" data-placement="top" title="下载 {{ ele.fullname }}">
+                                  <a href="/admin/share/view{{ url }}{{ ele.fullname }}" download="{{ ele.fullname }}" class="dark">
+                                    <i class="glyphicon glyphicon-save cursor-pointer"></i></a>
+                                </span>
+                                <span class="delete-file" name="{{ ele.fullname }}" path="{{ ele.fullname }}" data-toggle="tooltip" data-placement="top" title="删除 {{ ele.fullname }}">
+                                  <a href="#" class="dark">
+                                    <i class="glyphicon glyphicon-trash cursor-pointer"></i>
+                                  </a>
+                                </span>
+
+                            </td>
+
+                        {% endif %}
+
+
+                    </tr>
+                {% endfor %}
+                
+                </tbody>
+    </table>
+    
+    
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script>
+    var nonce = "{{ nonce }}";
+
+    $(document).ready(function () {
+        $('.delete-file').click(function () {
+            var elem = $(this);
+            var name = elem.attr("name");
+            var path = elem.attr("path");
+            var fullpath = "{{ url }}" + path;
+            ezq({
+                title: '删除 ' + name,
+                body: "是否<strong class='text-danger'>永久删除</strong> " +
+                    "<strong>" + htmlentities(name) + "</strong>? (share{{ url }}" + path + ") <br/><strong>该操作不可恢复。</strong>",
+                success: function () {
+                    const file_delete_route = '/admin/share/delete';
+                    $.post(file_delete_route, {
+                        path: fullpath,
+                        nonce: nonce,
+                    }, function (data) {
+                        var data = $.parseJSON(JSON.stringify(data));
+                        if (data == "1") {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        });
+
+    });
+
+    function show_rename(name, path) {
+        $('.showerror').empty();
+        $('.showerror').hide();
+        $("#file_name").attr("value", name);
+        $("#rename_path").attr("value", path);
+        $('#renameModal').modal('show');
+    };
+
+    function create_folder(){
+
+        var folder_name = $(" input[ name='folder_name' ] ").val();
+
+        if (folder_name.length==0){
+            showerror('文件夹名不能为空');
+            return;
+        }
+
+        $('#showerror').empty();
+
+        $.post(script_root + '/admin/share/create', {
+            'path': '{{ url }}',
+            'name': folder_name,
+            'nonce': $(" input[ name='nonce' ] ").val(),
+        }, function (data) {
+            //document.location.href = "/team";
+            if (data.length==0) {
+                location.reload();
+            }
+            else {
+               showerror(data[0]);
+               return;
+            }
+
+        });
+
+    }
+
+    function rename(){
+
+        var file_name = $(" input[ name='file_name' ] ").val();
+        var rename_path = $(" input[ name='rename_path' ] ").val();
+
+        if (file_name.length==0){
+            showerror('文件名不能为空');
+            return;
+        }
+
+        $('#showerror').empty();
+
+        $.post(script_root + '/admin/share/rename', {
+            'path': rename_path,
+            'name': '{{ url }}' + file_name,
+            'nonce': $(" input[ name='nonce' ] ").val(),
+        }, function (data) {
+            if (data.length==0) {
+                location.reload();
+            }
+            else {
+               showerror(data[0]);
+               return;
+            }
+
+        });
+
+    }
+
+    function upload(){
+		var form = $('#share_upload')[0];
+		var formData = new FormData(form);
+
+        var uploads = $(" input[ name='files[]' ] ").val();
+
+        if (uploads.length==0){
+            showerror('文件不能为空');
+            return;
+        }
+
+
+		console.log(formData);
+		$.ajax({
+			url: script_root + '/admin/share/upload',
+			data: formData,
+			type: 'POST',
+			cache: false,
+			contentType: false,
+			processData: false,
+			success: function(data){
+				if (data.length==0) {
+                    location.reload();
+                }
+                else {
+                    showerror(data[0]);
+                    return;
+                }
+			}
+		});
+	}
+    
+    (function ($) {
+     //插件
+     $.extend($, {
+              //命名空间
+              sortTable: {
+              sort: function (tableId, Idx) {
+              var table = document.getElementById(tableId);
+              var tbody = table.tBodies[0];
+              var tr = tbody.rows;
+
+              var trValue = new Array();
+              for (var i = 0; i < tr.length; i++) {
+              trValue[i] = tr[i];  //将表格中各行的信息存储在新建的数组中
+              }
+
+              if (tbody.sortCol == Idx) {
+              trValue.reverse(); //如果该列已经进行排序过了，则直接对其反序排列
+              } else {
+              //trValue.sort(compareTrs(Idx));  //进行排序
+              trValue.sort(function (tr1, tr2) {
+                           var value1 = tr1.cells[Idx].innerHTML;
+                           var value2 = tr2.cells[Idx].innerHTML;
+                           return value1.localeCompare(value2);
+                           });
+              }
+
+              var fragment = document.createDocumentFragment();  //新建一个代码片段，用于保存排序后的结果
+              for (var i = 0; i < trValue.length; i++) {
+              fragment.appendChild(trValue[i]);
+              }
+
+              tbody.appendChild(fragment); //将排序的结果替换掉之前的值
+              tbody.sortCol = Idx;
+              }
+              }
+              });
+     })(jQuery);
+    </script>
+
+
+{% endblock %}
