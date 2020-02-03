@@ -71,20 +71,6 @@ def share_view(logs_dir=''):
                            logs_dir=logs_dir, url=url, navs=navs)
 
 
-# @share.route('/admin/share/delete', methods=['POST'])
-# @admins_only
-# def delete_page22():
-#     path = request.form['path']
-#     if not path:
-#         return '0'
-#     share_folder = os.path.join(app.root_path, app.config['SHARE_FOLDER'])
-#     rm_file = safe_join(share_folder, path)
-#     if os.path.isfile(rm_file):
-#         os.remove(rm_file)
-#     else:
-#         return '0'
-#     return '1'
-
 @share.route('/admin/share/upload', methods=['POST'])
 @admins_only
 def upload_share():
@@ -98,8 +84,6 @@ def upload_share():
         filename = f.filename
         save_path = os.path.join(share_folder, path, filename)
         save_path = save_path.encode()
-
-        utils.color_print(save_path, 3)
 
         if os.path.isfile(save_path):
             return jsonify([u'文件名已存在'])
