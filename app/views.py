@@ -41,11 +41,11 @@ def static_html(template):
 REMOTE_HOST = "/html/user/static/js/echarts"
 
 
-@views.route('/graph')
+@views.route('/projects/ebuild')
 def graph():
     from app.interface import get_graph
     kline = get_graph()
-    return render_template('graph.html', url='/graph', myechart=kline.render_embed(),
+    return render_template('graph.html', url='/projects/ebuild', myechart=kline.render_embed(),
                            host=REMOTE_HOST,
                            script_list=kline.get_js_dependencies(), chart_id=kline.chart_id)
 
