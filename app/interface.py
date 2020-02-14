@@ -59,7 +59,7 @@ def get_graph():
     # for i in range(len(nodes)-1):
     #         links.append({"source": nodes[i].get('name'), "target": nodes[i+1].get('name')})
 
-    graph = Graph("智能建筑 | 实时监控", width=1000, height=800)
+    graph = Graph("智能建筑 | 实时监控", width=1000, height=700)
     # def xxx(g: Chart):
     #     g.get_options()
 
