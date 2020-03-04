@@ -1,3 +1,6 @@
+# coding=utf-8
+# encoding = utf-8
+
 import os
 import hashlib
 from flask import current_app as app, request, redirect, url_for, session, render_template, abort, jsonify
@@ -8,6 +11,18 @@ from .decorators import *
 
 def sha512(string):
     return hashlib.sha512(string).hexdigest()
+
+
+def init_errors(app):
+    @app.errorhandler(404)
+    def page_not_found(error):
+        if 'The requested URL was not found on the server.' in error.description:
+            error.description = u'该页无法访问'
+        return render_template('errors/404.html', error=error.description), 404
+
+    @app.errorhandler(403)
+    def forbidden(error):
+        return render_template('errors/403.html', error=error.description), 403
 
 
 def init_utils(app):

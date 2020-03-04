@@ -4,7 +4,7 @@ from flask import Flask
 from sqlalchemy.engine.url import make_url
 from sqlalchemy_utils import database_exists, create_database
 
-from app.utils import init_utils
+from app.utils import init_utils, init_errors
 from app.views import views
 from app.auth import auth
 
@@ -75,6 +75,7 @@ def create_app(config='app.config.Config'):
         app.db = db
 
         init_utils(app)
+        init_errors(app)
 
         app.register_blueprint(views)
         app.register_blueprint(auth)

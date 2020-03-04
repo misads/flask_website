@@ -1,3 +1,5 @@
+# coding=utf-8
+# encoding=utf-8
 import datetime
 import os
 import time
@@ -43,12 +45,20 @@ REMOTE_HOST = "/html/user/static/js/echarts"
 
 @views.route('/projects/ebuild')
 def graph():
+    return redirect('/projects/knowledge_graph')
+
+
+@views.route('/projects/knowledge_graph')
+def knowledge_graph():
+    if not utils.authed():
+        return redirect('/login?next=/projects/knowledge_graph')
+    if session['username'] != 'admin':
+        abort(403, description=u'您没有访问目标资源的权限')
     from app.interface import get_graph
     kline = get_graph()
     return render_template('graph.html', url='/projects/ebuild', myechart=kline.render_embed(),
                            host=REMOTE_HOST,
                            script_list=kline.get_js_dependencies(), chart_id=kline.chart_id)
-
 
 @views.route('/g')
 def g():
@@ -59,27 +69,27 @@ def g():
     return jsonify(d)
 
 
-@views.route('/new')
-def new_detect():
-    requests = request.args
-    if 'name' not in requests or 'value' not in requests:
-        return jsonify([])
-
-    name = requests['name']
-    value = requests['value']
-    timestr = utils.get_time_str(utils.get_time_stamp())
-    name_q = Data.query.filter_by(name=name).first()
-    status = 'Add'
-    if name_q:
-        status = 'Update'
-        name_q.value = value
-        name_q.time = timestr
-        db.session.commit()
-    else:
-        new_data = Data(name, value, timestr)
-        db.session.add(new_data)
-        db.session.commit()
-    return jsonify([status, name, value, timestr])
+# @views.route('/new')
+# def new_detect():
+#     requests = request.args
+#     if 'name' not in requests or 'value' not in requests:
+#         return jsonify([])
+#
+#     name = requests['name']
+#     value = requests['value']
+#     timestr = utils.get_time_str(utils.get_time_stamp())
+#     name_q = Data.query.filter_by(name=name).first()
+#     status = 'Add'
+#     if name_q:
+#         status = 'Update'
+#         name_q.value = value
+#         name_q.time = timestr
+#         db.session.commit()
+#     else:
+#         new_data = Data(name, value, timestr)
+#         db.session.add(new_data)
+#         db.session.commit()
+#     return jsonify([status, name, value, timestr])
 
 
 @views.route('/delete_all', methods=['GET'])
