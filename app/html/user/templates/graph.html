@@ -9,8 +9,13 @@
     <div class="container">
     {{ myechart|safe }}
     <br/>
-    <a href="/projects/ebuild/docs" style="margin-left: 5px;" class="btn btn-primary">查看文档</a>
-    <button id="update" style="margin-left: 5px;" class="btn btn-primary">更新数据</button>
+    <a href="/projects/ebuild/docs" style="margin-left: 5px;" class="btn btn-success">查看文档</a>
+    <button id="last_day" style="margin-left: 5px;" class="btn btn-primary">后退1天<<</button>
+    <button id="update_day" style="margin-left: 5px;" class="btn btn-primary">前进1天>></button>
+    <button id="last_hour" style="margin-left: 5px;" class="btn btn-default">后退1小时<</button>
+    <button id="update" style="margin-left: 5px;" class="btn btn-default">前进1小时></button>
+
+    <button id="reset" style="width: 100px;" class="btn btn-default float-right">重置</button>
     </div>
 
 {% endblock %}
@@ -22,7 +27,43 @@
 $(function () {
 
     $("#update").click(function () {
-        $.get('/g', function (data) {
+        $.get('/next_hour', function (data) {
+            var option=data;
+
+            myChart_{{ chart_id }}.setOption(option);
+
+        });
+    });
+
+    $("#update_day").click(function () {
+        $.get('/next_day', function (data) {
+            var option=data;
+
+            myChart_{{ chart_id }}.setOption(option);
+
+        });
+    });
+
+    $("#last_day").click(function () {
+        $.get('/last_day', function (data) {
+            var option=data;
+
+            myChart_{{ chart_id }}.setOption(option);
+
+        });
+    });
+
+    $("#last_hour").click(function () {
+        $.get('/last_hour', function (data) {
+            var option=data;
+
+            myChart_{{ chart_id }}.setOption(option);
+
+        });
+    });
+
+    $("#reset").click(function () {
+        $.get('/reset', function (data) {
             var option=data;
 
             myChart_{{ chart_id }}.setOption(option);

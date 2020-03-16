@@ -7,6 +7,7 @@ from sqlalchemy_utils import database_exists, create_database
 from app.utils import init_utils, init_errors
 from app.views import views
 from app.auth import auth
+from app.interface import interface
 
 from app.admin import admin
 from app.admin import pages
@@ -78,6 +79,7 @@ def create_app(config='app.config.Config'):
         init_errors(app)
 
         app.register_blueprint(views)
+        app.register_blueprint(interface)
         app.register_blueprint(auth)
         app.register_blueprint(admin)
         app.register_blueprint(pages)

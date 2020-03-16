@@ -1,35 +1,154 @@
 # encoding=utf-8
 from pyecharts import Graph
+from flask import current_app as app, Blueprint, jsonify, render_template, abort, send_file, session, request, redirect
 
 from app import utils
 import random
+import pickle
 
-def get_graph():
+WEEK_DAYS = ['一', '二', '三', '四', '五', '六', '日']
+WEATHERS = ['晴', '多云', '阴', '小雨', '中雨', '大雨', '雷阵雨']
+
+interface = Blueprint('interface', __name__)
+
+def decode_weather(code):
+    if '/' in code:
+        s = code.split('/')
+        return '%s转%s' % (WEATHERS[int(s[0])], WEATHERS[int(s[1])])
+    else:
+        return WEATHERS[int(code)]
+
+
+# def analyze(data):
+#     operating_modes = {
+#         'made_ice': {
+#             'refrigerator_energy': ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '23:00']
+#
+#         }
+#
+#
+#
+#
+#     }
+#     refrigerator_energy = data['refrigerator_energy']
+#     glycol_pump_energy = data['glycol_pump_energy']
+#     time_stamp = data['time_stamp']
+
+
+# data是i时刻的数据dataset[i]，data_one_hour_age是一小时前的数据
+# 返回一个tuple，(当前的工况，错误结点的集合)
+def analyse_operating_mode(data, data_one_hour_ag=None):
+    time_stamp = data['time_stamp']
+
+    refrigerator_energy = data['refrigerator_energy']
+    glycol_pump_energy = data['glycol_pump_energy']
+    cooling_pump_energy = data['cooling_pump_energy']
+    ice_bath_inlet_temp = data['ice_bath_inlet_temp']
+
+    a, b, c, d = refrigerator_energy > 800, glycol_pump_energy > 190, cooling_pump_energy > 165, ice_bath_inlet_temp < 0
+    if a and b and c and d:
+        return '冰槽蓄冰工况', set()
+
+    if a or b or c or d:
+        error_nodes = set()
+        dict = {'refrigerator_energy': a, 'glycol_pump_energy': b, 'cooling_pump_energy': c, 'ice_bath_inlet_temp': d}
+        for d in dict:
+            if not dict[d]:
+                error_nodes.add(d)
+        if len(error_nodes) > 1:
+            return '未知工况', set()
+
+        # 冰槽入口温度的延迟
+        return '存在异常结点', error_nodes
+
+    return '未知工况', set()
+
+
+f = open('app/dataset_py2.pkl', 'rb')
+dataset = pickle.load(f)
+f.close()
+ii = 0
+
+
+@interface.route('/reset')
+def reset():
+    global ii
+    ii = 0
+    return redirect('/g')
+
+
+@interface.route('/next_hour')
+def next_hour():
+    global ii
+    ii = (ii + 1) % (24*58)  # 24*7
+    return redirect('/g')
+
+
+@interface.route('/last_hour')
+def last_hour():
+    global ii
+    ii = ii - 1  # 24*7
+    if ii < 0:
+        ii = 24 * 58 - 1
+    return redirect('/g')
+
+
+@interface.route('/next_day')
+def next_day():
+    global ii
+    ii = (ii + 24) % (24*58)  # 24*7
+    ii = ii // 24 * 24
+    return redirect('/g')
+
+
+@interface.route('/last_day')
+def last_day():
+    global ii
+    ii = ii - 24  # 24*7
+    if ii < 0:
+        ii = 24 * 57
+
+    ii = ii // 24 * 24
+    return redirect('/g')
+
+def get_graph(time=None):
     relation = utils.load_yml('app/relation_north.yml')
-    nodes = [{"name": relation[i]['label'], "symbolSize": 15, "draggable": "True", "value": round(20 + random.random() * 20, 3),
-              "category": 3 if random.random() < 0.01 else relation[i]['category']} for i in relation]
 
-    # nodes = [{"name": "结点1", "symbolSize": 10, "draggable": "False", "value": 10, "category": "energy"},
-    #          {"name": "结点2", "symbolSize": 20, "draggable": "False", "value": 10, "category": "energy"},
-    #          {"name": "结点3", "symbolSize": 30, "draggable": "False", "value": 10, "category": "energy"},
-    #          {"name": "结点4", "symbolSize": 20, "draggable": "False", "value": 10, "category": "temp"},
-    #          {"name": "结点5", "symbolSize": 10, "draggable": "False", "value": 10, "category": "temp"},
-    #          {"name": "结点6", "symbolSize": 20, "draggable": "False", "value": 10, "category": "temp"},
-    #          {"name": "结点7", "symbolSize": 30, "draggable": "False", "value": 10, "category": "flow"},
-    #          {"name": "结点8", "symbolSize": 20, "draggable": "False", "value": 10, "category": "temp"}]
-    #
-    # nodes = [{"name": "结点1", "symbolSize": 30, "draggable": "True", "category": 0},
-    #          {"name": "结点2", "symbolSize": 30, "draggable": "True", "category": 0},
-    #          {"name": "结点3", "symbolSize": 30, "draggable": "True", "value": 10, "category": 1},
-    #          {"name": "结点4", "symbolSize": 30, "draggable": "True", "value": 10, "category": 1},
-    #          {"name": "结点5", "symbolSize": 30, "draggable": "True", "value": 10, "category": 1},
-    #          {"name": "结点6", "symbolSize": 30, "draggable": "True", "value": 10, "category": 2},
-    #          {"name": "结点7", "symbolSize": 30, "draggable": "True", "value": 10, "category": 2},
-    #          {"name": "结点8", "symbolSize": 30, "draggable": "True", "value": 10, "category": 3}]
+    # len(dataset)  # 16704
+    # 几点的
+    day = 1
+    hour = 8
+
+    data = dataset[12 * 24 * (day - 1) + 12 * ii]
+
+    time = data['time_stamp'] + ' 星期%s' % WEEK_DAYS[int(data['week_day'])]
+    # analyze(data)
+
+    def get_value(i):
+        if i == 'outdoor_env_weather':
+            return decode_weather(data[i])
+        return data[i] if i in data and str(data[i]) != 'nan' else 'Nan'
+
+    op_mode, error_nodes = analyse_operating_mode(data)
+
+    def get_category(i):
+        category = relation[i]['category']
+        if i in error_nodes:
+            return 4
+
+        if 'active' in relation[i] and (str(data[i]) == 'nan' or float(data[i]) < relation[i]['active']):
+            return 3
+
+        return category
+
+    nodes = [{"name": relation[i]['label'], "symbolSize": 15, "draggable": "True",
+              "value": get_value(i),
+              "category": get_category(i)} for i in relation]
 
     categories = [{'name': '温度'},
                   {'name': '流量'},
                   {'name': '能耗'},
+                  {'name': '关闭'},
                   {'name': '异常'}]
 
     links = []
@@ -52,18 +171,23 @@ def get_graph():
             length = 1000 // d  # - random.randint(-100, 100)
             links.append({"source": relation[parent]['label'], "target": cur, "value": length})
 
+
     label_color = ['#334553', '#B34038', '#E57F3A']
     label_color = ['#5cb85c', '#337ab7', '#f0ad4e', '#dc3545']  # success warning danger
+    label_color = ['#5cb85c', '#337ab7', '#f0ad4e', '#bbbbbb', '#dc3545']
     line_color = '#353A3F'  # 黑
     # line_color = '#555A5F'  # 黑
     # for i in range(len(nodes)-1):
     #         links.append({"source": nodes[i].get('name'), "target": nodes[i+1].get('name')})
 
-    graph = Graph("智能建筑 | 实时监控", width=1000, height=700)
+    if not time:
+        time = utils.get_time_str(utils.get_time_stamp())
+    graph = Graph("智能建筑 | 实时监控", subtitle="%s\n当前工况：%s" % (time, op_mode),
+                  width=1000, height=700, subtitle_text_size=14)
     # def xxx(g: Chart):
     #     g.get_options()
 
-    graph.add("", nodes, links, categories,
+    graph.add("楼A", nodes, links, categories,
               graph_layout="force",
               is_label_show=True,
               graph_edge_length=[50, 200],
@@ -77,6 +201,8 @@ def get_graph():
               label_text_color=None,
               line_color=line_color,
               line_opacity=0.75,
+              label_text_size=13,
+              label_emphasis_textsize=13,
               is_random=False,
               label_color=label_color,
               label_formatter='{b}\n{c}')
