@@ -187,10 +187,16 @@ def get_graph():  # circular force none
 
         return category
 
+    def get_size(node):
+        if 'importance' in relation[node]:
+            return relation[node]['importance']
+        else:
+            return 15
+
     nodes_count = len(relation)
     nodes_a_line = int(math.sqrt(nodes_count)) + 1
 
-    nodes = [{"name": relation[node]['label'], "symbolSize": 15,  # "draggable": "True",
+    nodes = [{"name": relation[node]['label'], "symbolSize": get_size(node),  # "draggable": "True",
               "value": get_value(node),
               "category": get_category(node)
               } for i, node in enumerate(relation)]
@@ -243,7 +249,7 @@ def get_graph():  # circular force none
     if not time:
         time = utils.get_time_str(utils.get_time_stamp())
     graph = Graph("智能建筑 | 实时监控", subtitle="%s\n当前工况：%s" % (time, op_mode),
-                  width=900, height=700, subtitle_text_size=14)
+                  width=920, height=700, subtitle_text_size=14)
     # def xxx(g: Chart):
     #     g.get_options()
 
