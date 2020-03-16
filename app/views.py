@@ -58,6 +58,9 @@ def knowledge_graph():
     if 'i' not in session:
         session['i'] = 0
 
+    if 'style' not in session:
+        session['style'] = 0
+
     from app.interface import get_graph
     kline = get_graph()
     return render_template('graph.html', url='/projects/ebuild', myechart=kline.render_embed(),

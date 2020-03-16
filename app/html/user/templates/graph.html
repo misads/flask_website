@@ -15,7 +15,9 @@
     <button id="last_hour" style="margin-left: 5px;" class="btn btn-default">后退1小时<</button>
     <button id="update" style="margin-left: 5px;" class="btn btn-default">前进1小时></button>
 
-    <button id="reset" style="width: 100px;" class="btn btn-default float-right">重置</button>
+    <button id="reset" style="width: 100px; margin-left: 10px;" class="btn btn-default float-right">重置</button>
+    <button id="change_style" style="width: 100px; margin-left: 10px;" class="btn btn-warning float-right">更改样式</button>
+
     </div>
 
 {% endblock %}
@@ -25,6 +27,16 @@
 {% block scripts %}
 <script type="text/javascript">
 $(function () {
+
+    $("#change_style").click(function () {
+        $.get('/change_style', function (data) {
+            var option=data;
+            myChart_{{ chart_id }}.clear();
+            myChart_{{ chart_id }}.setOption(option);
+
+        });
+    });
+
 
     $("#update").click(function () {
         $.get('/next_hour', function (data) {

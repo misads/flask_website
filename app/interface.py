@@ -1,4 +1,6 @@
 # encoding=utf-8
+import math
+
 from pyecharts import Graph
 from flask import current_app as app, Blueprint, jsonify, render_template, abort, send_file, session, request, redirect
 
@@ -10,6 +12,7 @@ WEEK_DAYS = ['一', '二', '三', '四', '五', '六', '日']
 WEATHERS = ['晴', '多云', '阴', '小雨', '中雨', '大雨', '雷阵雨']
 
 interface = Blueprint('interface', __name__)
+
 
 def decode_weather(code):
     if '/' in code:
@@ -72,6 +75,12 @@ f.close()
 ii = 0
 
 
+@interface.route('/change_style')
+def change_style():
+    session['style'] = (session['style'] + 1) % 3
+    return redirect('/g')
+
+
 @interface.route('/reset')
 def reset():
     session['i'] = 0
@@ -80,7 +89,7 @@ def reset():
 
 @interface.route('/next_hour')
 def next_hour():
-    session['i'] = (session['i'] + 1) % (24*58)
+    session['i'] = (session['i'] + 1) % (24 * 58)
     return redirect('/g')
 
 
@@ -94,7 +103,7 @@ def last_hour():
 
 @interface.route('/next_day')
 def next_day():
-    session['i'] = (session['i'] + 24) % (24*58)
+    session['i'] = (session['i'] + 24) % (24 * 58)
     session['i'] = session['i'] // 24 * 24
     return redirect('/g')
 
@@ -108,7 +117,43 @@ def last_day():
     return redirect('/g')
 
 
-def get_graph(time=None):
+locations = [
+    (62, 0),
+    (195, 400),
+    (313, 311),
+    (237, 127),
+    (168, 366),
+    (470, 261),  # 5
+    (200, 145),
+    (342, 422),
+    (191, 187),
+    (437, 68),
+    (270, 77),  # 10
+    (122, 2),
+    (418, 105),
+    (179, 295),
+    (97, 422),
+    (75, 252),  # 15
+    (378, 194),
+    (359, 383),
+    (242, 268),
+    (510, 153),
+    (288, 3),  # 20
+    (489, 349),
+    (488, 390),
+    (39, 274),
+    (426, 239),
+    (253, 243),  # 25
+    (37, 106),
+    (170, 118),
+    (97, 188),
+]
+
+show_styles = ['none', 'force', 'circular']
+
+
+def get_graph():  # circular force none
+    show_style = show_styles[session['style']]
     relation = utils.load_yml('app/relation_north.yml')
 
     # len(dataset)  # 16704
@@ -119,33 +164,52 @@ def get_graph(time=None):
     data = dataset[12 * 24 * (day - 1) + 12 * ii]
 
     time = data['time_stamp'] + ' 星期%s' % WEEK_DAYS[int(data['week_day'])]
+
     # analyze(data)
 
-    def get_value(i):
-        if i == 'outdoor_env_weather':
-            return decode_weather(data[i])
-        return data[i] if i in data and str(data[i]) != 'nan' else 'Nan'
+    def get_value(node):
+        if show_style == 'circular':
+            return 0
+
+        if node == 'outdoor_env_weather':
+            return decode_weather(data[node])
+        return data[node] if node in data and str(data[node]) != 'nan' else 'Nan'
 
     op_mode, error_nodes = analyse_operating_mode(data)
 
-    def get_category(i):
-        category = relation[i]['category']
-        if i in error_nodes:
+    def get_category(node):
+        category = relation[node]['category']
+        if node in error_nodes:
             return 4
 
-        if 'active' in relation[i] and (str(data[i]) == 'nan' or float(data[i]) < relation[i]['active']):
+        if 'active' in relation[node] and (str(data[node]) == 'nan' or float(data[node]) < relation[node]['active']):
             return 3
 
         return category
 
-    nodes = [{"name": relation[i]['label'], "symbolSize": 15, "draggable": "True",
-              "value": get_value(i),
-              "category": get_category(i)} for i in relation]
+    nodes_count = len(relation)
+    nodes_a_line = int(math.sqrt(nodes_count)) + 1
+
+    nodes = [{"name": relation[node]['label'], "symbolSize": 15,  # "draggable": "True",
+              "value": get_value(node),
+              "category": get_category(node)
+              } for i, node in enumerate(relation)]
+
+    if show_style == 'none':
+        for i, node in enumerate(nodes):
+            node['x'] = (i % nodes_a_line) * 400
+            node['y'] = (i // nodes_a_line) * 400
+
+    elif show_style == 'force':
+        for i, node in enumerate(nodes):
+            loc = locations[i]
+            node['x'] = loc[0] * 1.5
+            node['y'] = loc[1] * 1.5
 
     categories = [{'name': '温度'},
                   {'name': '流量'},
                   {'name': '能耗'},
-                  {'name': '关闭'},
+                  {'name': '未开启'},
                   {'name': '异常'}]
 
     links = []
@@ -168,7 +232,6 @@ def get_graph(time=None):
             length = 1000 // d  # - random.randint(-100, 100)
             links.append({"source": relation[parent]['label'], "target": cur, "value": length})
 
-
     label_color = ['#334553', '#B34038', '#E57F3A']
     label_color = ['#5cb85c', '#337ab7', '#f0ad4e', '#dc3545']  # success warning danger
     label_color = ['#5cb85c', '#337ab7', '#f0ad4e', '#bbbbbb', '#dc3545']
@@ -180,28 +243,87 @@ def get_graph(time=None):
     if not time:
         time = utils.get_time_str(utils.get_time_stamp())
     graph = Graph("智能建筑 | 实时监控", subtitle="%s\n当前工况：%s" % (time, op_mode),
-                  width=1000, height=700, subtitle_text_size=14)
+                  width=900, height=700, subtitle_text_size=14)
     # def xxx(g: Chart):
     #     g.get_options()
 
-    graph.add("楼A", nodes, links, categories,
-              graph_layout="force",
-              is_label_show=True,
-              graph_edge_length=[50, 200],
-              graph_repulsion=3,
-              graph_gravity=0.001,
-              is_legend_show=True,
-              label_pos="right",
-              line_curve=0.2,
-              graph_edge_symbol=['', 'arrow'],
-              graph_edge_symbolsize=7,
-              label_text_color=None,
-              line_color=line_color,
-              line_opacity=0.75,
-              label_text_size=13,
-              label_emphasis_textsize=13,
-              is_random=False,
-              label_color=label_color,
-              label_formatter='{b}\n{c}')
+    # nodes = [{"name": "结点%d" % i, "symbolSize": 15, "draggable": "True", "category": i % 4, "value":10} for i in range(30)]
+    # [utils.color_print(i['value'], 3) for i in nodes]
+    # links = []
+    # for i in nodes:
+    #     for j in nodes:
+    #         links.append({"source": i.get('name'), "target": j.get('name'), "value": 20})
 
+    # graph.add(
+    #     "",
+    #     nodes,
+    #     links,
+    #     categories,
+    #     is_label_show=True,
+    #     graph_repulsion=8000,
+    #     graph_layout="circular",
+    #     line_curve=0.2,
+    #     label_text_color=None,
+    # )
+
+
+    if show_style == 'circular':
+        graph.add("楼A", nodes, links, categories,
+                  graph_layout="circular",
+                  graph_repulsion=0,
+                  is_label_show=True,
+                  is_legend_show=True,
+                  label_pos="right",
+                  graph_edge_symbol=['', 'arrow'],
+                  graph_edge_symbolsize=7,
+                  label_text_color=None,
+                  line_color=line_color,
+                  line_opacity=0.65,
+                  label_text_size=13,
+                  line_curve=0.2,
+                  label_emphasis_textsize=13,
+                  is_random=False,
+                  label_color=label_color,
+                  label_formatter='{b}')
+
+    if show_style == 'force':
+        graph.add("楼A", nodes, links, categories,
+                  graph_layout="force",
+                  is_label_show=True,
+                  graph_edge_length=[50, 200],
+                  graph_repulsion=3,
+                  graph_gravity=0.001,
+                  is_legend_show=True,
+                  label_pos="right",
+                  line_curve=0.2,
+                  graph_edge_symbol=['', 'arrow'],
+                  graph_edge_symbolsize=7,
+                  label_text_color=None,
+                  line_color=line_color,
+                  line_opacity=0.75,
+                  label_text_size=13,
+                  label_emphasis_textsize=13,
+                  is_random=False,
+                  label_color=label_color,
+                  label_formatter='{b}\n{c}')
+
+    if show_style == 'none':
+        graph.add("楼A", nodes, links, categories,
+                  graph_layout="none",
+                  is_label_show=True,
+                  # graph_edge_length=[50, 300],
+                  # graph_repulsion=3,
+                  is_legend_show=True,
+                  label_pos="bottom",
+                  line_curve=0.1,
+                  graph_edge_symbol=['', 'arrow'],
+                  graph_edge_symbolsize=7,
+                  label_text_color=None,
+                  line_color=line_color,
+                  line_opacity=0.65,
+                  label_text_size=13,
+                  label_emphasis_textsize=13,
+                  is_random=False,
+                  label_color=label_color,
+                  label_formatter='{b}\n{c}')
     return graph
