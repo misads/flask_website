@@ -54,6 +54,10 @@ def knowledge_graph():
         return redirect('/login?next=/projects/knowledge_graph')
     if session['username'] != 'admin':
         abort(403, description=u'您没有访问目标资源的权限')
+
+    if 'i' not in session:
+        session['i'] = 0
+
     from app.interface import get_graph
     kline = get_graph()
     return render_template('graph.html', url='/projects/ebuild', myechart=kline.render_embed(),

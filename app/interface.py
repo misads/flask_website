@@ -36,7 +36,7 @@ def decode_weather(code):
 
 
 # data是i时刻的数据dataset[i]，data_one_hour_age是一小时前的数据
-# 返回一个tuple，(当前的工况，错误结点的集合)
+# 返回一个tuple，即(当前的工况，错误结点的集合)
 def analyse_operating_mode(data, data_one_hour_ag=None):
     time_stamp = data['time_stamp']
 
@@ -72,44 +72,39 @@ ii = 0
 
 @interface.route('/reset')
 def reset():
-    global ii
-    ii = 0
+    session['i'] = 0
     return redirect('/g')
 
 
 @interface.route('/next_hour')
 def next_hour():
-    global ii
-    ii = (ii + 1) % (24*58)  # 24*7
+    session['i'] = (session['i'] + 1) % (24*58)
     return redirect('/g')
 
 
 @interface.route('/last_hour')
 def last_hour():
-    global ii
-    ii = ii - 1  # 24*7
-    if ii < 0:
-        ii = 24 * 58 - 1
+    session['i'] -= 1
+    if session['i'] < 0:
+        session['i'] = 24 * 58 - 1
     return redirect('/g')
 
 
 @interface.route('/next_day')
 def next_day():
-    global ii
-    ii = (ii + 24) % (24*58)  # 24*7
-    ii = ii // 24 * 24
+    session['i'] = (session['i'] + 24) % (24*58)
+    session['i'] = session['i'] // 24 * 24
     return redirect('/g')
 
 
 @interface.route('/last_day')
 def last_day():
-    global ii
-    ii = ii - 24  # 24*7
-    if ii < 0:
-        ii = 24 * 57
-
-    ii = ii // 24 * 24
+    session['i'] -= 24
+    if session['i'] < 0:
+        session['i'] = 24 * 57
+    session['i'] = session['i'] // 24 * 24
     return redirect('/g')
+
 
 def get_graph(time=None):
     relation = utils.load_yml('app/relation_north.yml')
@@ -118,7 +113,7 @@ def get_graph(time=None):
     # 几点的
     day = 1
     hour = 8
-
+    ii = session['i']
     data = dataset[12 * 24 * (day - 1) + 12 * ii]
 
     time = data['time_stamp'] + ' 星期%s' % WEEK_DAYS[int(data['week_day'])]
