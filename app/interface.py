@@ -37,7 +37,9 @@ def decode_weather(code):
 
 # data是i时刻的数据dataset[i]，data_one_hour_age是一小时前的数据
 # 返回一个tuple，即(当前的工况，错误结点的集合)
-def analyse_operating_mode(data, data_one_hour_ag=None):
+# 需求文档：http://www.ynlab.top/projects/ebuild/docs/#/demand
+# 接口文档：http://www.ynlab.top/projects/ebuild/docs/#/interface
+def analyse_operating_mode(data, data_one_hour_ago=None):
     time_stamp = data['time_stamp']
 
     refrigerator_energy = data['refrigerator_energy']
