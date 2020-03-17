@@ -121,7 +121,7 @@ locations = [
     (62, 0),
     (195, 400),
     (313, 311),
-    (237, 127),
+    (237, 107),
     (168, 366),
     (470, 261),  # 5
     (200, 145),
@@ -168,12 +168,18 @@ def get_graph():  # circular force none
     # analyze(data)
 
     def get_value(node):
-        if show_style == 'circular':
-            return 0
-
         if node == 'outdoor_env_weather':
             return decode_weather(data[node])
-        return data[node] if node in data and str(data[node]) != 'nan' else 'Nan'
+
+        # if show_style == 'circular':
+        #     return '(' + str(data[node]) + ')' if node in data and str(data[node]) != 'nan' else 'Nan'
+        if node in data and str(data[node]) != 'nan':
+            if 'unit' in relation[node]:
+                return str(data[node]) + relation[node]['unit']
+            else:
+                return data[node]
+        else:
+            return 'Nan'
 
     op_mode, error_nodes = analyse_operating_mode(data)
 
@@ -196,7 +202,7 @@ def get_graph():  # circular force none
     nodes_count = len(relation)
     nodes_a_line = int(math.sqrt(nodes_count)) + 1
 
-    nodes = [{"name": relation[node]['label'], "symbolSize": get_size(node),  # "draggable": "True",
+    nodes = [{"name": relation[node]['label'] if show_style != 'circular' else relation[node]['label'], "symbolSize": get_size(node),  # "draggable": "True",
               "value": get_value(node),
               "category": get_category(node)
               } for i, node in enumerate(relation)]
@@ -290,7 +296,7 @@ def get_graph():  # circular force none
                   label_emphasis_textsize=13,
                   is_random=False,
                   label_color=label_color,
-                  label_formatter='{b}')
+                  label_formatter='{b}\n{c}')
 
     if show_style == 'force':
         graph.add("楼A", nodes, links, categories,
