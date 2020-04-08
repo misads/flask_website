@@ -9,7 +9,8 @@
     <div class="container">
     {{ myechart|safe }}
     <br/>
-    <a href="/projects/ebuild/docs" style="margin-left: 5px;" class="btn btn-success">查看文档</a>
+{#    <a href="/projects/ebuild/docs" style="margin-left: 5px;" class="btn btn-success">查看文档</a>#}
+    <button id="play" style="margin-left: 5px;" class="btn btn-success">自动更新</button>
     <button id="last_day" style="margin-left: 5px;" class="btn btn-primary">后退1天<<</button>
     <button id="update_day" style="margin-left: 5px;" class="btn btn-primary">前进1天>></button>
     <button id="last_hour" style="margin-left: 5px;" class="btn btn-default">后退1小时<</button>
@@ -26,7 +27,26 @@
 
 {% block scripts %}
 <script type="text/javascript">
+
+
 $(function () {
+
+    {#window.setInterval(update, 300);#}
+
+    function update() {
+        $.get('/next_step', function (data) {
+            var option=data;
+
+            myChart_{{ chart_id }}.setOption(option);
+
+        });
+    }
+
+    $("#play").click(function () {
+        window.setInterval(update, 900);
+    });
+
+
 
     $("#change_style").click(function () {
         $.get('/change_style', function (data) {

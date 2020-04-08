@@ -42,36 +42,131 @@ def decode_weather(code):
 # 返回一个tuple，即(当前的工况，错误结点的集合)
 # 需求文档：http://www.ynlab.top/projects/ebuild/docs/#/demand
 # 接口文档：http://www.ynlab.top/projects/ebuild/docs/#/interface
+
+
+a = 'refrigerator_energy'
+b = 'glycol_pump_energy'
+c = 'cooling_pump_energy'
+d = 'ice_bath_inlet_temp'
+e = 'air_conditioner_energy'
+f = 'frez_pump_energy'
+g = 'glycol_pump_energy'
+h = 'frez_flow'
+i = 'glycol_flow'
+j = 'ice_bath_outlet_temp'
+l = 'frez_water_supp_temp'
+m = 'frez_water_back_temp'
+n = 'north_outdoor_temp'
+o = 'base_fridge_energy'
+p = 'base_pump_energy'  # 基载泵
+
+
 def analyse_operating_mode(data, data_one_hour_ago=None):
-    time_stamp = data['time_stamp']
 
-    refrigerator_energy = data['refrigerator_energy']
-    glycol_pump_energy = data['glycol_pump_energy']
-    cooling_pump_energy = data['cooling_pump_energy']
-    ice_bath_inlet_temp = data['ice_bath_inlet_temp']
+    time = data['time_stamp']
+    hour = int(time[11:13])
+    weekend = '六' in time or '日' in time
+    ago = data_one_hour_ago
 
-    a, b, c, d = refrigerator_energy > 800, glycol_pump_energy > 190, cooling_pump_energy > 165, ice_bath_inlet_temp < 0
-    if a and b and c and d:
-        return '冰槽蓄冰工况', set()
+    A1_ = int(ago[a] > 800)
+    B_ = int(ago[b] > 190)
+    C1_ = int(ago[c] > 165)
+    D_ = int(ago[d] < 0)
+    J_ = int(ago[j] > 0)
+    E1_ = int(ago[e] > 220)
+    E2_ = int(ago[e] < 110)
+    E_ = E2_ if weekend else E1_
+    F_ = int(ago[f] > 60)
+    G1_ = int(ago[g] > 30)
+    H2_ = int(ago[h] > 480)
+    I_ = int(ago[i] > 150)
 
-    if a or b or c or d:
-        error_nodes = set()
-        dict = {'refrigerator_energy': a, 'glycol_pump_energy': b, 'cooling_pump_energy': c, 'ice_bath_inlet_temp': d}
-        for d in dict:
-            if not dict[d]:
-                error_nodes.add(d)
-        if len(error_nodes) > 1:
-            return '未知工况', set()
+    A1 = int(data[a] > 800)
+    A2 = int(400 < data[a] < 600)
+    B = int(data[b] > 190)
+    C1 = int(data[c] > 165)
+    C2 = int(75 < data[c] < 140)
+    D = int(data[d] < 0)
+    E1 = int(data[e] > 220)
+    E2 = int(data[e] < 110)
+    E = E2 if weekend else E1
 
-        # 冰槽入口温度的延迟
-        return '存在异常结点', error_nodes
+    F = int(data[f] > 60)
+    G1 = int(data[g] > 30)
+    G2 = int(data[g] > 100)
+    H1 = int(240 < data[h] < 320)
+    H2 = int(data[h] > 480)
+    I = int(data[i] > 150)
+    J = int(data[j] > -0.2)
+    LM = int(3.5 <= data[m] - data[l] <= 7)
+    N = int(data[n] < 26)
+    O = int(data[o] > 180)
+    P = int(data[p] > 70)
 
-    return '未知工况', set()
+
+    # if (A1 and B and C1) != (A1 or B or C1):
+    #     print(A1, B, C1)
+    #     return '存在异常结点', {a, b, c}
+
+    errnode = set()
+    if D and sum([A1, B, C1]) == 2:
+        if not A1: errnode.add(a)
+        elif not B: errnode.add(b)
+        else: errnode.add(c)
+        return '存在异常结点', errnode
+
+    if A1_ and B_ and C1_ and A1 and B and C1 and not D_:
+        if not D:
+            return '存在异常结点', {d}
+
+    work = '未知工况'
+    if A1 and B and C1:
+        work = '冰槽蓄冰工况'
+
+    if 0 <= hour <= 2:
+        if work != '冰槽蓄冰工况':  # ①
+            work = '工况错误，冰槽未能制冰'
+            errnode.update([a, b, c])
+
+    if work == '冰槽蓄冰工况' and 9 <= hour < 21:
+        work = '工况错误，白天制冰'
+        return work, errnode
+
+    if F and not H2:
+        errnode.add(f) if not F else errnode.add(h)
+
+    if E and F and G1 and H2 and I:
+        if not LM:
+            errnode.update([l, m])
+        if not N:
+            errnode.update(n)
+
+        if not 8 <= hour <= 21:
+            work = '工况错误，晚上融冰'
+            return work, errnode
+
+        work = '冰槽融冰工况'  # ②
+
+    if E_ and F_ and G1_ and H2_ and I_ and not J_ and not J:
+        errnode.add(j)
+
+    if A2 and F and G2 and C2 and H2 and not I:
+        work = '双工况冷机直供工况'  # ③
+
+    if not I and O and P and H1:
+        work = '基载直供工况'
+
+    if O and not P:
+        errnode.add(p)
+    if P and not O:
+        errnode.add(o)
+
+    return work, errnode
 
 
-f = open('app/dataset_py2.pkl', 'rb')
-dataset = pickle.load(f)
-f.close()
+pkl = open('app/dataset_py2.pkl', 'rb')
+dataset = pickle.load(pkl)
+pkl.close()
 ii = 0
 
 
@@ -87,33 +182,39 @@ def reset():
     return redirect('/g')
 
 
+@interface.route('/next_step')
+def next_step():
+    session['i'] = (session['i'] + 3) % (24 * 58 * 12)
+    return redirect('/g')
+
+
 @interface.route('/next_hour')
 def next_hour():
-    session['i'] = (session['i'] + 1) % (24 * 58)
+    session['i'] = (session['i'] + 12) % (24 * 58 * 12)
     return redirect('/g')
 
 
 @interface.route('/last_hour')
 def last_hour():
-    session['i'] -= 1
+    session['i'] -= 12
     if session['i'] < 0:
-        session['i'] = 24 * 58 - 1
+        session['i'] = 24 * 58 * 12 - 12
     return redirect('/g')
 
 
 @interface.route('/next_day')
 def next_day():
-    session['i'] = (session['i'] + 24) % (24 * 58)
-    session['i'] = session['i'] // 24 * 24
+    session['i'] = (session['i'] + 12 * 24) % (24 * 58 * 12)
+    # session['i'] = session['i'] // 24 * 24
     return redirect('/g')
 
 
 @interface.route('/last_day')
 def last_day():
-    session['i'] -= 24
+    session['i'] -= 12 * 24
     if session['i'] < 0:
-        session['i'] = 24 * 57
-    session['i'] = session['i'] // 24 * 24
+        session['i'] = 24 * 57 * 12
+    # session['i'] = session['i'] // 24 * 24
     return redirect('/g')
 
 
@@ -161,7 +262,9 @@ def get_graph():  # circular force none
     day = 1
     hour = 8
     ii = session['i']
-    data = dataset[12 * 24 * (day - 1) + 12 * ii]
+    idx = 12 * 24 * (day - 1) + ii
+    data = dataset[idx]
+    data_one_hour_age = dataset[max(0, idx - 12)]
 
     time = data['time_stamp'] + ' 星期%s' % WEEK_DAYS[int(data['week_day'])]
 
@@ -181,7 +284,7 @@ def get_graph():  # circular force none
         else:
             return 'Nan'
 
-    op_mode, error_nodes = analyse_operating_mode(data)
+    op_mode, error_nodes = analyse_operating_mode(data, data_one_hour_age)
 
     def get_category(node):
         category = relation[node]['category']
