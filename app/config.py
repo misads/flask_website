@@ -33,6 +33,8 @@ class Config(object):
 
     http://flask.pocoo.org/docs/0.11/quickstart/#sessions
     '''
+    JSON_AS_ASCII = False
+    
     SECRET_KEY = os.environ.get('SECRET_KEY') or key
 
     '''
