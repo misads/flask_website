@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="{{ request.script_root }}/html/user/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ request.script_root }}/html/user/static/css/font-awesome/fontawesome-all.css">
+    <link rel="stylesheet" href="{{ request.script_root }}/html/user/static/css/font-awesome/fontawesome-fonts.css">
+
+
 {#    <link rel="stylesheet" href="{{ request.script_root }}/html/user/static/css/navbar.less">#}
 {#    <link rel="stylesheet" href="{{ request.script_root }}/html/user/static/css/navs.less">#}
 {#    <link rel="stylesheet" href="{{ request.script_root }}/html/user/static/css/glyphicons.less">#}
@@ -29,73 +33,84 @@
 {##}
 {#</nav>#}
 
-<nav class="navbar navbar-default" role="navigation">
-	<div class="container">
-	<div class="navbar-header">
-		<a class="navbar-brand" href="/">Flask</a>
-	</div>
-	<div>
-		<ul class="nav navbar-nav">
-			<li class="active"><a href="/">主页</a></li>
-			<li><a href="/query">Query</a></li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    Toggle
-                    <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">jmeter</a></li>
-                    <li><a href="#">EJB</a></li>
-                    <li><a href="#">Jasper Report</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">分离的链接</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">另一个分离的链接</a></li>
-                </ul>
-            </li>
-            <li class="dropdown">
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02"
+                aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                    <a href="#" class="dropbtn nav-link">Coding <b class="caret"></b><span class="ico_down"></span></a>
-
-                    <div class="dropdown-content topmost">
-                        <a href="#">Leetcode</a>
-                        <a href="#">Python</a>
-
-                    </div>
-
-
-            </li>
-		</ul>
-
-        <p class="navbar-text navbar-right">　　　</p>
-
-        <ul class="nav navbar-nav navbar-right">
-            {%if not username %}
-                <li><a id="register" href="#">注册</a></li>
-                <li><a style="padding-left: 5px; padding-right: 5px;">|</a></li>
-            {% endif %}
-            {%if username %}
-                <li class="dropdown">
-
-                    <a href="#" class="dropbtn nav-link">{{ username }} <b class="caret"></b><span class="ico_down"></span></a>
-
-                    <div class="dropdown-content topmost">
-                        <a href="#">我的主页</a>
-                        <a href="#">积分</a>
-                        <a href="#">设置</a>
-                        <a href="/logout">退出</a>
-
-                    </div>
-
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">Home
+                        <span class="visually-hidden">(current)</span>
+                    </a>
                 </li>
-            {% else %}
-                <li><a id="login" href="#">登录</a></li>
-            {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/query">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Pricing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Separated link</a>
+                    </div>
+                </li>
+            </ul>
 
-		</ul>
-	</div>
-	</div>
+            <form class="d-flex">
+                <input class="form-control me-sm-2" type="text" placeholder="Search">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+
+            <p class="navbar-text navbar-right">　　　</p>
+            <ul class="navbar-nav ml-md-auto">
+
+            </ul>
+
+            <ul class="nav-item navbar-nav ml-md-auto">
+                {%if not username %}
+                    <li class="nav-item active">
+                         <a id="register" class="nav-link" href="#">注册</a>
+                    </li>
+                    <li class="nav-item active"><a class="nav-link" style="margin-left: 5px; margin-right: 5px;">|</a></li>
+                {% endif %}
+                {%if username %}
+                    <li class="dropdown">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                               aria-haspopup="true" aria-expanded="false">{{ username }}</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Action 1</a>
+                                <a class="dropdown-item" href="#">Action 2</a>
+                                <a class="dropdown-item" href="#">Action 3</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">退出</a>
+                            </div>
+                        </li>
+                    </li>
+                {% else %}
+                    <li class="nav-item active">
+                         <a id="login" class="nav-link" href="#">登录</a>
+                    </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
 </nav>
 
 
@@ -105,7 +120,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <span style="font-size:20px;">Flask</span>
+                <span style="font-size:20px;">Flask Website</span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="display: inline"><span
                         aria-hidden="true">&times;</span></button>
             </div>
@@ -122,22 +137,31 @@
                         <input type="hidden" name="nonce"
                                value="{{ nonce }}">
                         <div class="form-group field-loginform-username required">
-                            <div class="input-group"><span class="input-group-addon"><i
-                                    class="glyphicon glyphicon-user"></i></span><input
+                            <div class="input-group">
+                                <span class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-user"></i></span>
+                                </span>
+                                <input
                                     type="text" id="loginform-username" class="form-control" name="reg_username"
                                     placeholder="用户名" aria-required="true"></div>
                             <p class="help-block help-block-error"></p>
                         </div>
                         <div class="form-group field-loginform-email required">
-                            <div class="input-group"><span class="input-group-addon"><i
-                                    class="glyphicon glyphicon-envelope"></i></span><input
+                            <div class="input-group">
+                                <span class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                </span>
+                                <input
                                     type="text" id="loginform-email" class="form-control" name="reg_email"
                                     placeholder="邮箱" aria-required="true"></div>
                             <p class="help-block help-block-error"></p>
                         </div>
                         <div class="form-group field-loginform-password required">
-                            <div class="input-group"><span class="input-group-addon"><i
-                                    class="glyphicon glyphicon-lock"></i></span><input
+                            <div class="input-group">
+                                <span class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                                </span>
+                                <input
                                     type="password" id="loginform-password" class="form-control" name="reg_password"
                                     placeholder="密码" aria-required="true"></div>
                             <p class="help-block help-block-error"></p>
@@ -161,7 +185,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <span style="font-size:20px;">Flask</span>
+                <span style="font-size:20px;">Flask Website</span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="display: inline"><span
                         aria-hidden="true">&times;</span></button>
             </div>
@@ -178,15 +202,22 @@
                         <input type="hidden" name="nonce"
                                value="{{ nonce }}">
                         <div class="form-group field-loginform-username required">
-                            <div class="input-group"><span class="input-group-addon"><i
-                                    class="glyphicon glyphicon-user"></i></span><input
+                            <div class="input-group">
+                                <span class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-user"></i></span>
+                                </span>
+                                <input
                                     type="text" id="loginform-username" class="form-control" name="login_username"
                                     placeholder="用户名或邮箱" aria-required="true"></div>
                             <p class="help-block help-block-error"></p>
                         </div>
                         <div class="form-group field-loginform-password required">
-                            <div class="input-group"><span class="input-group-addon"><i
-                                    class="glyphicon glyphicon-lock"></i></span><input
+                            <div class="input-group">
+                                <span class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                                </span>
+
+                                <input
                                     type="password" id="loginform-password" class="form-control" name="login_password"
                                     placeholder="密码" aria-required="true"></div>
                             <p class="help-block help-block-error"></p>
@@ -206,7 +237,7 @@
                         </div>
                         <div class="form-group">
                             <a class="btn btn-primary" name="login-button" onclick="login();">登录</a>
-                            <a class="pull-right" href="/site/request-password-reset">忘记密码</a></div>
+                            <a class="float-right" href="/site/request-password-reset">忘记密码</a></div>
 
 {#                    </form>#}
                 </div>
