@@ -14,7 +14,7 @@ requests==2.18.4
 PyMySQL==0.8.0
 gunicorn==19.7.1
 dataset==1.0.5
-mistune==0.8.3
+mistune==2.0.3
 netaddr==0.7.19
 redis==2.10.6
 datafreeze==0.1.0
