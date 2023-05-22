@@ -10,7 +10,7 @@ passlib==1.7.1
 six==1.11.0
 bcrypt
 itsdangerous==0.24
-requests==2.18.4
+requests==2.31.0
 PyMySQL==0.8.0
 gunicorn==19.7.1
 dataset==1.0.5
